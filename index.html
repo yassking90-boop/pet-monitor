@@ -1,0 +1,431 @@
+<!-- Save this as index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <title>Pet Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .install-banner {
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        .install-banner button {
+            background: white;
+            color: #4caf50;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .mode-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 15px;
+            border: 3px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.3);
+        }
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .status.info { background: #e3f2fd; color: #1976d2; }
+        .status.success { background: #e8f5e9; color: #388e3c; }
+        .status.error { background: #ffebee; color: #c62828; }
+        .code-display {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 5px;
+            font-family: monospace;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 5px;
+            font-family: monospace;
+            margin-bottom: 15px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .instructions {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff9800;
+        }
+        .instructions h3 {
+            color: #f57c00;
+            margin-bottom: 10px;
+        }
+        .instructions ol {
+            margin-left: 20px;
+        }
+        .instructions li {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="installBanner" class="install-banner">
+            <p>📱 Install Pet Monitor as an app!</p>
+            <button onclick="installApp()">Install Now</button>
+        </div>
+
+        <h1>🐦 Pet Monitor 🐱</h1>
+        <p class="subtitle">Watch your canary and cat while you work</p>
+        
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="switchMode('camera')">📱 Phone (Camera)</button>
+            <button class="mode-btn" onclick="switchMode('viewer')">💻 PC (Viewer)</button>
+        </div>
+
+        <!-- Camera Mode (Phone) -->
+        <div id="camera-section" class="section active">
+            <div class="instructions">
+                <h3>📱 Phone Instructions:</h3>
+                <ol>
+                    <li>Click "Start Camera" below</li>
+                    <li>Allow camera access when prompted</li>
+                    <li>Share the code with your PC</li>
+                    <li>Position your phone to see your pets</li>
+                </ol>
+            </div>
+            <div id="camera-status" class="status info">Ready to start camera</div>
+            <div class="video-container">
+                <video id="localVideo" autoplay muted playsinline></video>
+            </div>
+            <div id="code-container" style="display:none;" class="code-display">
+                <p style="margin-bottom:10px; color:#666;">Share this code with your PC:</p>
+                <div class="code" id="connectionCode"></div>
+            </div>
+            <button id="startCamera" onclick="startCamera()">Start Camera</button>
+        </div>
+
+        <!-- Viewer Mode (PC) -->
+        <div id="viewer-section" class="section">
+            <div class="instructions">
+                <h3>💻 PC Instructions:</h3>
+                <ol>
+                    <li>Enter the code from your phone below</li>
+                    <li>Click "Connect to Phone"</li>
+                    <li>Wait for the video stream to appear</li>
+                    <li>Keep this tab open while working</li>
+                </ol>
+            </div>
+            <div id="viewer-status" class="status info">Enter code to connect</div>
+            <input type="text" id="codeInput" placeholder="ENTER CODE" maxlength="6">
+            <button id="connectBtn" onclick="connectToCamera()">Connect to Phone</button>
+            <div class="video-container" style="margin-top:20px;">
+                <video id="remoteVideo" autoplay playsinline></video>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let localStream;
+        let peerConnection;
+        let connectionCode;
+        let deferredPrompt;
+        
+        const servers = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        };
+
+        const signals = {};
+
+        // PWA Install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBanner').style.display = 'block';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('App installed');
+                    }
+                    deferredPrompt = null;
+                    document.getElementById('installBanner').style.display = 'none';
+                });
+            }
+        }
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => {
+                console.log('Service worker registration failed:', err);
+            });
+        }
+
+        function switchMode(mode) {
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            
+            if (mode === 'camera') {
+                document.querySelector('.mode-btn:first-child').classList.add('active');
+                document.getElementById('camera-section').classList.add('active');
+            } else {
+                document.querySelector('.mode-btn:last-child').classList.add('active');
+                document.getElementById('viewer-section').classList.add('active');
+            }
+        }
+
+        function generateCode() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        function updateStatus(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `status ${type}`;
+        }
+
+        async function startCamera() {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    updateStatus('camera-status', '✗ Camera API not available. You need HTTPS!', 'error');
+                    alert('⚠️ This page needs to be served over HTTPS or localhost to access camera.\n\nPlease upload to Netlify or use a web server.');
+                    return;
+                }
+
+                updateStatus('camera-status', 'Requesting camera access...', 'info');
+                
+                localStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' },
+                    audio: false 
+                });
+                
+                document.getElementById('localVideo').srcObject = localStream;
+                connectionCode = generateCode();
+                document.getElementById('connectionCode').textContent = connectionCode;
+                document.getElementById('code-container').style.display = 'block';
+                document.getElementById('startCamera').disabled = true;
+                
+                updateStatus('camera-status', '✓ Camera ready! Waiting for PC connection...', 'success');
+                
+                setupCameraPeer();
+            } catch (error) {
+                let errorMsg = '✗ Camera access error: ';
+                if (error.name === 'NotAllowedError') {
+                    errorMsg += 'Please allow camera permissions.';
+                } else if (error.name === 'NotFoundError') {
+                    errorMsg += 'No camera found.';
+                } else if (error.name === 'NotReadableError') {
+                    errorMsg += 'Camera in use by another app.';
+                } else {
+                    errorMsg += error.message;
+                }
+                updateStatus('camera-status', errorMsg, 'error');
+                console.error('Camera error:', error);
+            }
+        }
+
+        function setupCameraPeer() {
+            peerConnection = new RTCPeerConnection(servers);
+            
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    signals[connectionCode] = signals[connectionCode] || {};
+                    signals[connectionCode].candidates = signals[connectionCode].candidates || [];
+                    signals[connectionCode].candidates.push(event.candidate);
+                }
+            };
+
+            peerConnection.createOffer().then(offer => {
+                return peerConnection.setLocalDescription(offer);
+            }).then(() => {
+                signals[connectionCode] = signals[connectionCode] || {};
+                signals[connectionCode].offer = peerConnection.localDescription;
+                checkForAnswer();
+            });
+        }
+
+        function checkForAnswer() {
+            const interval = setInterval(() => {
+                if (signals[connectionCode] && signals[connectionCode].answer) {
+                    peerConnection.setRemoteDescription(signals[connectionCode].answer);
+                    if (signals[connectionCode].remoteCandidates) {
+                        signals[connectionCode].remoteCandidates.forEach(candidate => {
+                            peerConnection.addIceCandidate(candidate);
+                        });
+                    }
+                    updateStatus('camera-status', '✓ Connected to PC! Your pets are being monitored.', 'success');
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+
+        async function connectToCamera() {
+            const code = document.getElementById('codeInput').value.toUpperCase().trim();
+            if (!code) {
+                updateStatus('viewer-status', '✗ Please enter a code', 'error');
+                return;
+            }
+
+            if (!signals[code] || !signals[code].offer) {
+                updateStatus('viewer-status', '✗ Invalid code or phone not ready', 'error');
+                return;
+            }
+
+            updateStatus('viewer-status', 'Connecting to phone...', 'info');
+            document.getElementById('connectBtn').disabled = true;
+
+            peerConnection = new RTCPeerConnection(servers);
+
+            peerConnection.ontrack = (event) => {
+                document.getElementById('remoteVideo').srcObject = event.streams[0];
+                updateStatus('viewer-status', '✓ Connected! Watching your pets...', 'success');
+            };
+
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    signals[code].remoteCandidates = signals[code].remoteCandidates || [];
+                    signals[code].remoteCandidates.push(event.candidate);
+                }
+            };
+
+            await peerConnection.setRemoteDescription(signals[code].offer);
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            signals[code].answer = answer;
+
+            if (signals[code].candidates) {
+                signals[code].candidates.forEach(candidate => {
+                    peerConnection.addIceCandidate(candidate);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
